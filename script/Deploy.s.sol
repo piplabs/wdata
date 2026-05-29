@@ -6,9 +6,8 @@ import { WDATA } from "../src/WDATA.sol";
 
 contract Deploy is Script {
     function run() external returns (WDATA wdata) {
-        address wip = vm.envAddress("WIP_ADDRESS");
         vm.startBroadcast();
-        wdata = new WDATA(wip);
+        wdata = new WDATA();
         vm.stopBroadcast();
     }
 }
