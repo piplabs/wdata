@@ -73,7 +73,7 @@ contract WDATATest is Test {
         wdata.deposit{ value: 1 ether }();
 
         vm.prank(address(rr));
-        vm.expectRevert(WDATA.IPTransferFailed.selector);
+        vm.expectRevert(WDATA.DATATransferFailed.selector);
         wdata.withdraw(1 ether);
     }
 
