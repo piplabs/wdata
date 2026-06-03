@@ -13,7 +13,7 @@ contract WDATA is ERC20 {
     event Withdrawal(address indexed to, uint amount);
 
     /// @notice emitted when a transfer of native DATA fails
-    error IPTransferFailed();
+    error DATATransferFailed();
     /// @notice emitted when an invalid transfer recipient is detected
     error ERC20InvalidReceiver(address receiver);
     /// @notice emitted when an invalid transfer spender is detected
@@ -38,7 +38,7 @@ contract WDATA is ERC20 {
         _burn(msg.sender, value);
         (bool success, ) = msg.sender.call{ value: value }("");
         if (!success) {
-            revert IPTransferFailed();
+            revert DATATransferFailed();
         }
         emit Withdrawal(msg.sender, value);
     }
