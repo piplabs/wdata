@@ -2,20 +2,15 @@
 pragma solidity 0.8.23;
 
 import { ERC20 } from "solady/src/tokens/ERC20.sol";
-import { IWIP } from "./interfaces/IWIP.sol";
 
 /// @notice Wrapped DATA implementation. Rebrand of WIP; the underlying native token is unchanged.
 /// @author Inspired by WETH9 (https://github.com/dapphub/ds-weth/blob/master/src/weth9.sol)
 contract WDATA is ERC20 {
-    /// @notice the legacy Wrapped IP contract, used to migrate balances 1:1 into WDATA
-    address public immutable WIP;
 
     /// @notice emitted when native DATA is deposited in exchange for WDATA
     event Deposit(address indexed from, uint amount);
     /// @notice emitted when WDATA is withdrawn in exchange for native DATA
     event Withdrawal(address indexed to, uint amount);
-    /// @notice emitted when a user migrates WIP into WDATA
-    event Migrated(address indexed user, uint amount);
 
     /// @notice emitted when a transfer of native DATA fails
     error IPTransferFailed();
@@ -23,17 +18,9 @@ contract WDATA is ERC20 {
     error ERC20InvalidReceiver(address receiver);
     /// @notice emitted when an invalid transfer spender is detected
     error ERC20InvalidSpender(address spender);
-    /// @notice emitted when pulling WIP from the migrating user fails
-    error WIPTransferFromFailed();
-
-    constructor(address wip) {
-        WIP = wip;
-    }
 
     /// @notice triggered when native DATA is sent to this contract
-    /// @dev native sent by the WIP contract during migrate() is accepted silently so it is not re-wrapped
     receive() external payable {
-        if (msg.sender == WIP) return;
         deposit();
     }
 
@@ -54,16 +41,6 @@ contract WDATA is ERC20 {
             revert IPTransferFailed();
         }
         emit Withdrawal(msg.sender, value);
-    }
-
-    /// @notice migrates `amount` of WIP held by msg.sender into WDATA at a 1:1 rate
-    /// @dev caller must first approve this contract on WIP for at least `amount`
-    function migrate(uint256 amount) external {
-        bool ok = IWIP(WIP).transferFrom(msg.sender, address(this), amount);
-        if (!ok) revert WIPTransferFromFailed();
-        IWIP(WIP).withdraw(amount);
-        _mint(msg.sender, amount);
-        emit Migrated(msg.sender, amount);
     }
 
     /// @notice returns the name of the token
