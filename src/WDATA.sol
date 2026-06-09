@@ -90,4 +90,11 @@ contract WDATA is ERC20 {
     function _givePermit2InfiniteAllowance() internal pure override returns (bool) {
         return true;
     }
+
+    /// @dev Returns the precomputed `keccak256(bytes(name()))`. Safe because `name()` is a
+    /// fixed literal that never changes, letting `permit()` and `DOMAIN_SEPARATOR()` skip
+    /// recomputing the name hash on every call.
+    function _constantNameHash() internal pure override returns (bytes32 result) {
+        return keccak256(bytes("Wrapped DATA"));
+    }
 }

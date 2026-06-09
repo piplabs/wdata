@@ -137,6 +137,24 @@ contract WDATATest is Test {
     function test_Permit2InfiniteAllowance() public view {
         assertEq(wdata.allowance(alice, PERMIT2), type(uint256).max);
     }
+
+    // ---------- EIP-712 domain separator / constant name hash ----------
+
+    function test_DomainSeparator_BuiltFromName() public view {
+        bytes32 domainTypehash =
+            keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
+        bytes32 expected = keccak256(
+            abi.encode(
+                domainTypehash,
+                keccak256(bytes(wdata.name())),
+                keccak256("1"),
+                block.chainid,
+                address(wdata)
+            )
+        );
+
+        assertEq(wdata.DOMAIN_SEPARATOR(), expected);
+    }
 }
 
 contract RejectingReceiver {
