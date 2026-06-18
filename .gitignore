@@ -20,3 +20,9 @@ docs/
 
 # Local tooling
 .serena/
+
+# Verification backup snapshot
+backup/
+
+# Local deployer key file (never commit secrets)
+deployer
